@@ -5,39 +5,42 @@ CREATE TABLE admin
 );
 
 CREATE TABLE company(
-    id INTEGER PRIMARY KEY,
+    company_id INTEGER PRIMARY KEY AUTOINCREMENT,
     company_name TEXT,
     company_api_key TEXT);
 
 
 CREATE TABLE location
 (
-    id INTEGER PRIMARY KEY,
+    location_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    company_id INTEGER,
     location_name TEXT,
     location_country TEXT,
     location_city TEXT,
     location_meta TEXT,
-    company_id INTEGER,
-    FOREIGN KEY(company_id) REFERENCES company(id)
+    location_api_key TEXT NOT NULL,
+    FOREIGN KEY(company_id) REFERENCES company(company_id)
 );
 
 
 CREATE TABLE sensor
 (
-    id INTEGER PRIMARY KEY,
+    sensor_id INTEGER PRIMARY KEY AUTOINCREMENT,
     location_id INTEGER,
     sensor_name TEXT,
     sensor_category TEXT,
     sensor_meta TEXT,
     sensor_api_key TEXT,
-    FOREIGN KEY(location_id) REFERENCES location(id)
+    FOREIGN KEY(location_id) REFERENCES location(location_id)
 );
 
 CREATE TABLE sensor_data
 (
-    id INTEGER PRIMARY KEY,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    sensor_data_id INTEGER PRIMARY KEY AUTOINCREMENT,
     sensor_id INTEGER,
+    timestamp INTEGER NOT NULL,
     data TEXT,
-    FOREIGN KEY(sensor_id) REFERENCES sensor(id)
+    FOREIGN KEY(sensor_id) REFERENCES sensor(sensor_id)
 );
+
+INSERT INTO company (company_id, company_name, company_api_key) VALUES(1, 'ACME Inc.', '1234'),(2, 'XYZ Corp.', '1232'),(3, 'Testing', 'Testing');
