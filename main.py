@@ -212,12 +212,19 @@ def create_sensor_data():
     api_key = request.json["token"]  # sensor_api_key
     time = request.json["time"]
     data = request.json["data"]
+    sensor_id = request.json["id"]
     
     db = sqlite3.connect("database.db")
-    cursor = db.execute("SELECT * FROM sensor WHERE sensor_api_key=?", (api_key,))
-    sensor = cursor.fetchone()
-    if not sensor:
+    cursor = db.execute("SELECT * FROM company WHERE company_api_key=?", (api_key,))
+    company = cursor.fetchone()
+    if not company:
         return jsonify({"error": "Clave API invalida."}), 401
+    
+    cursor = db.execute("SELECT * FROM sensor WHERE sensor_id=?", (sensor_id,))
+    sensor = cursor.fetchone()
+
+    if not sensor:
+        return jsonify({"error": "no sensor."}), 401
     
     db.execute("INSERT INTO sensor_data (sensor_id,timestamp,data) VALUES (?, ?, ?)",
                 (sensor[0],time,data))
@@ -233,12 +240,15 @@ def get_sensor_data():
     api_key = request.json["token"]  # sensor_api_key
     time_i = request.json["time0"]
     time_f = request.json["time1"]
-    sensor_id = request.json["sensor_id"]
+    sensor_id = request.json["id"]
+
     db = sqlite3.connect("database.db")
-    cursor = db.execute("SELECT * FROM sensor WHERE sensor_api_key=?", (api_key,))
-    sensor = cursor.fetchone()
-    if not sensor:
-        return jsonify({"error": "Clave API invalida."}), 401
+
+    cursor = db.execute("SELECT * FROM Company WHERE company_api_key=?", (api_key,))
+    company = cursor.fetchone()
+
+    if not company:
+        return jsonify({"error":"api key invalida."})
     
     cursor = db.execute("SELECT * FROM sensor_data WHERE sensor_id IN ({}) AND timestamp >= ? AND timestamp <= ?".format(','.join('?'*len(sensor_id))),(*sensor_id, time_i, time_f))
     sensor_data = cursor.fetchall()
@@ -248,9 +258,8 @@ def get_sensor_data():
         sensor = {
             'sensor_data_id':row[0],
             'sensor_id':row[1],
-            'variable1':row[2],
-            'variable2':row[3],
-            'timestamp':row[4]
+            'timestamp':row[2],
+            'data':row[3]
         }
         sensor_data_list.append(sensor)
     db.close()
