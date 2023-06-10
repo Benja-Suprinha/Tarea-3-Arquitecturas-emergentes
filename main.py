@@ -207,7 +207,7 @@ def deletesensor():
 
     return jsonify({"message":"Se borro con exito"})
 
-@app.route("/sensor_data", methods=["POST"])
+@app.route("/api/v1/sensor_data", methods=["POST"])
 def create_sensor_data():
     api_key = request.json["token"]  # sensor_api_key
     time = request.json["time"]
@@ -235,7 +235,7 @@ def create_sensor_data():
     return jsonify({"message":"Se guardo la data correctamente"})
 
 
-@app.route("/sensor_data", methods=["GET"])
+@app.route("/api/v1/sensor_data", methods=["GET"])
 def get_sensor_data():
     api_key = request.json["token"]  # sensor_api_key
     time_i = request.json["time0"]
